@@ -1,33 +1,25 @@
 <div class="card my-3">
-    <div class="card-header text-center bg-danger text-white">Listado de Clientes</div>
-    <div class="card-body">
+    <div class="card-header text-center bg-dark text-info">
+      <h3>Listado de Clientes</h3>
+    </div>
+    <div class="card-body table-responsive">
         <table class="table table-striped">
-            <thead class="thead-dark">
+            <thead class="thead-light">
               <tr>
-                <th scope="col">#</th>
-                <th scope="col">First</th>
-                <th scope="col">Last</th>
-                <th scope="col">Handle</th>
+                <th scope="col-1">#</th>
+                <th scope="co-2">Nombre</th>
+                <th scope="col-2">Apellido</th>
+                <th scope="col-2">Email</th>
+                <th scope="col-2">Fecha de Creación</th>
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <th scope="row">1</th>
-                <td>Mark</td>
-                <td>Otto</td>
-                <td>@mdo</td>
-              </tr>
-              <tr>
-                <th scope="row">2</th>
-                <td>Jacob</td>
-                <td>Thornton</td>
-                <td>@fat</td>
-              </tr>
-              <tr>
-                <th scope="row">3</th>
-                <td>Larry</td>
-                <td>the Bird</td>
-                <td>@twitter</td>
+              <tr *ngFor="let cliente of clientes">
+                <th scope="row">{{cliente.id}}</th>
+                <td>{{cliente.nombre}}</td>
+                <td>{{cliente.apellido}}</td>
+                <td>{{cliente.email}}</td>
+                <td>{{cliente.createAt | date: 'mediumDate'}}</td>
               </tr>
             </tbody>
           </table>
