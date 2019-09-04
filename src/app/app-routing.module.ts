@@ -7,7 +7,8 @@ import { ClienteFormComponent } from './cliente/cliente-form/cliente-form.compon
 const routes: Routes = [
   {path: "", redirectTo: "/clientes", pathMatch: "full"},
   {path: "clientes", component: ClienteComponent},
-  {path: "clientes/create", component: ClienteFormComponent}
+  {path: "clientes/create", component: ClienteFormComponent},
+  {path: "clientes/edit/:id", component: ClienteFormComponent}
 ];
 
 @NgModule({
