@@ -1,43 +1,79 @@
-<div class="card my-3">
-    <div class="card-header text-center bg-dark text-info">
-      <h3>Listado de Clientes</h3>
-    </div>
-    <div class="card-body table-responsive">
-      <div class="mb-2">
-        <button class="btn btn-primary" routerLink="/clientes/create">Crear Cliente</button>
-      </div>
-      
-      <div class="alert alert-info" *ngIf="clientes?.length == 0">
-        No hay registros de clientes disponibles.
-      </div>    
+<app-cliente-detalles
+  *ngIf="clienteSeleccionado"
+  [cliente]="clienteSeleccionado"
+></app-cliente-detalles>
 
-        <table class="table table-striped" *ngIf="clientes?.length > 0">
-            <thead class="thead-light">
-              <tr>
-                <th scope="col-1">#</th>
-                <th scope="co-2">Nombre</th>
-                <th scope="col-2">Apellido</th>
-                <th scope="col-2">Email</th>
-                <th scope="col-2">Fecha de Creación</th>
-                <th>Editar</th>
-                <th>Eliminar</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr *ngFor="let cliente of clientes">
-                <th scope="row">{{cliente.id}}</th>
-                <td>{{cliente.nombre}}</td>
-                <td>{{cliente.apellido}}</td>
-                <td>{{cliente.email}}</td>
-                <td>{{cliente.createdAt | date: 'mediumDate'}}</td>
-                <td>
-                  <button class="btn btn-warning" [routerLink]="['/clientes/edit', cliente.id]">Editar</button>
-                </td>
-                <td>
-                  <button class="btn btn-danger" (click)="deleteCliente(cliente)">Eliminar</button>
-                </td>
-              </tr>
-            </tbody>
-          </table>
+<div class="card my-3">
+  <div class="card-header text-center bg-dark text-info">
+    <h3>Listado de Clientes</h3>
+  </div>
+  <div class="card-body table-responsive">
+    <div class="mb-2">
+      <button class="btn btn-primary" routerLink="/clientes/create">
+        Crear Cliente
+      </button>
     </div>
+
+    <div class="alert alert-warning" *ngIf="error">
+      Error al intentar conectar con el servidor.
+    </div>
+
+    <div class="alert alert-info" *ngIf="clientes?.length == 0">
+      No hay registros de clientes disponibles.
+    </div>
+
+    <table class="table table-striped" *ngIf="clientes?.length > 0">
+      <thead class="thead-light">
+        <tr>
+          <th scope="col">#</th>
+          <th scope="col">Nombre</th>
+          <th scope="col">Apellido</th>
+          <th scope="col">Email</th>
+          <th scope="col">Fecha de Creación</th>
+          <th>Editar</th>
+          <th>Eliminar</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let cliente of clientes">
+          <th scope="row">
+            <img
+              (click)="abrirModal(cliente)"
+              style="min-width: 64px;width: 64px;height:64px;cursor: pointer"
+              class="rounded img-thumbnail d-inline-block"
+              *ngIf="cliente?.foto"
+              src="http://localhost:8080/api/v1/clientes/img/{{ cliente.foto }}"
+            />
+
+            <img
+              (click)="abrirModal(cliente)"
+              style="min-width: 64px;width: 64px;height:64px;cursor: pointer"
+              class="rounded img-thumbnail"
+              *ngIf="!cliente?.foto"
+              src="http://localhost:8080/images/no-usuario.png"
+            />
+          </th>
+          <td>{{ cliente.nombre }}</td>
+          <td>{{ cliente.apellido | uppercase }}</td>
+          <td>{{ cliente.email }}</td>
+          <td>{{ cliente.createdAt | date: 'EEEE dd, MMMM yyyy' }}</td>
+          <td>
+            <button
+              class="btn btn-warning"
+              [routerLink]="['/clientes/edit', cliente.id]"
+            >
+              Editar
+            </button>
+          </td>
+          <td>
+            <button class="btn btn-danger" (click)="deleteCliente(cliente)">
+              Eliminar
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <app-paginador *ngIf="paginador" [paginador]="paginador"></app-paginador>
+  </div>
 </div>

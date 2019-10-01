@@ -1,56 +1,96 @@
 import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { ClienteService } from './cliente.service';
 import { Cliente } from './cliente';
 import swal from 'sweetalert2';
+import { ModalService } from './cliente-detalles/modal.service';
 
 @Component({
   selector: 'app-cliente',
   templateUrl: './cliente.component.html',
-  styleUrls: ['./cliente.component.css']
 })
 export class ClienteComponent implements OnInit {
-
   clientes: Cliente[];
+  paginador: any;
+  clienteSeleccionado: Cliente;
+  error = false;
 
-  constructor(private clientService: ClienteService) { }
+  constructor(
+    private clienteService: ClienteService,
+    private activatedRoute: ActivatedRoute,
+    private modalService: ModalService
+  ) {}
 
   ngOnInit() {
-    this.clientService.getClientes().subscribe(
-      clientes => this.clientes = clientes
-    );
+    this.activatedRoute.paramMap.subscribe(params => {
+      let page: number = +params.get('page');
+      if (!page) {
+        page = 0;
+      }
+
+      this.clienteService.getClientes(page).subscribe(
+        (response: any) => {
+          this.error = false;
+          this.clientes = response.content;
+          this.paginador = response;
+        },
+        error => {
+          this.error = true;
+        }
+      );
+    });
+
+    this.modalService.imageUpload.subscribe(cliente => {
+      console.log(cliente);
+      this.clientes = this.clientes.map(clienteOriginal => {
+        console.log(clienteOriginal.foto);
+        if (clienteOriginal.id == cliente.id) {
+          console.log('YEAH');
+          clienteOriginal.foto = cliente.foto;
+        }
+        console.log(clienteOriginal.foto);
+        return clienteOriginal;
+      });
+    });
   }
 
   deleteCliente(cliente: Cliente): void {
     const swalWithBootstrapButtons = swal.mixin({
       customClass: {
         confirmButton: 'btn btn-success',
-        cancelButton: 'btn btn-danger'
+        cancelButton: 'btn btn-danger',
       },
-      buttonsStyling: false
-    })
-    
-    swalWithBootstrapButtons.fire({
-      title: 'Estas seguro?',
-      text: "You won't be able to revert this!",
-      type: 'warning',
-      showCancelButton: true,
-      confirmButtonText: 'Si, eliminar!',
-      cancelButtonText: 'No, cancelar!',
-      reverseButtons: true
-    }).then((result) => {
-      if (result.value) {
-        this.clientService.deleteCliente(cliente.id).subscribe(
-          response => {
-            this.clientes = this.clientes.filter(cli => cli != cliente);
+      buttonsStyling: false,
+    });
+
+    swalWithBootstrapButtons
+      .fire({
+        title: 'Estas seguro?',
+        // tslint:disable-next-line: quotemark
+        text: "You won't be able to revert this!",
+        type: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Si, eliminar!',
+        cancelButtonText: 'No, cancelar!',
+        reverseButtons: true,
+      })
+      .then(result => {
+        if (result.value) {
+          this.clienteService.deleteCliente(cliente.id).subscribe(response => {
+            this.clientes = this.clientes.filter(cli => cli !== cliente);
 
             swalWithBootstrapButtons.fire(
               'Deleted!',
               'Your file has been deleted.',
               'success'
-            )
-          }
-        );
-      }
-    })
+            );
+          });
+        }
+      });
+  }
+
+  abrirModal(cliente) {
+    this.clienteSeleccionado = cliente;
+    this.modalService.abrirModal();
   }
 }
