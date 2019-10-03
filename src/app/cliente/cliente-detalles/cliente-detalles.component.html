@@ -1,10 +1,4 @@
-<div
-  *ngIf="modalService.modal"
-  class="modal"
-  tabindex="-1"
-  role="dialog"
-  style="display: block;"
->
+<div *ngIf="modalService.modal" class="modal" tabindex="-1" role="dialog" style="display: block;">
   <div class="modal-dialog modal-lg" role="document">
     <div class="modal-content">
       <div class="modal-header">
@@ -30,7 +24,7 @@
                 <li class="list-group-item">{{ cliente.createdAt }}</li>
                 <li class="list-group-item">{{ cliente.region.nombre }}</li>
               </ul>
-              <div class="input-group">
+              <div class="input-group" *ngIf="auth.hasRole('ROLE_ADMIN')">
                 <div class="custom-file">
                   <input
                     (change)="seleccionarFoto($event)"
@@ -38,16 +32,10 @@
                     class="custom-file-input"
                     id="inputFoto"
                   />
-                  <label class="custom-file-label" for="inputFoto"
-                    >Seleccionar Imagen</label
-                  >
+                  <label class="custom-file-label" for="inputFoto">Seleccionar Imagen</label>
                 </div>
                 <div class="input-group-append">
-                  <button
-                    (click)="subirFoto()"
-                    class="btn btn-outline-secondary"
-                    type="button"
-                  >
+                  <button (click)="subirFoto()" class="btn btn-outline-secondary" type="button">
                     Subir
                   </button>
                 </div>
@@ -68,12 +56,16 @@
             </div>
             <div class="col-sm">
               <img
-                class="rounded img-thumbnail"
-                *ngIf="cliente?.foto"
-                src="http://localhost:8080/api/v1/clientes/img/{{
-                  cliente.foto
-                }}"
+                class="rounded img-thumbnail w-100"
+                *ngIf="cliente?.foto; else imagenDefault"
+                src="http://localhost:8080/api/v1/clientes/img/{{ cliente.foto }}"
               />
+              <ng-template #imagenDefault>
+                <img
+                  class="rounded img-thumbnail w-100"
+                  src="http://localhost:8080/images/no-usuario.png"
+                />
+              </ng-template>
             </div>
           </div>
         </div>

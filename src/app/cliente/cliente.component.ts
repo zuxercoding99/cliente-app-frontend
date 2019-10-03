@@ -4,6 +4,7 @@ import { ClienteService } from './cliente.service';
 import { Cliente } from './cliente';
 import swal from 'sweetalert2';
 import { ModalService } from './cliente-detalles/modal.service';
+import { AuthService } from '../usuarios/auth.service';
 
 @Component({
   selector: 'app-cliente',
@@ -11,6 +12,7 @@ import { ModalService } from './cliente-detalles/modal.service';
 })
 export class ClienteComponent implements OnInit {
   clientes: Cliente[];
+  displayedColumns: string[] = ['id', 'nombre', 'apellido', 'email', 'createAt'];
   paginador: any;
   clienteSeleccionado: Cliente;
   error = false;
@@ -18,7 +20,8 @@ export class ClienteComponent implements OnInit {
   constructor(
     private clienteService: ClienteService,
     private activatedRoute: ActivatedRoute,
-    private modalService: ModalService
+    private modalService: ModalService,
+    public auth: AuthService
   ) {}
 
   ngOnInit() {
@@ -41,14 +44,10 @@ export class ClienteComponent implements OnInit {
     });
 
     this.modalService.imageUpload.subscribe(cliente => {
-      console.log(cliente);
       this.clientes = this.clientes.map(clienteOriginal => {
-        console.log(clienteOriginal.foto);
         if (clienteOriginal.id == cliente.id) {
-          console.log('YEAH');
           clienteOriginal.foto = cliente.foto;
         }
-        console.log(clienteOriginal.foto);
         return clienteOriginal;
       });
     });
@@ -79,11 +78,7 @@ export class ClienteComponent implements OnInit {
           this.clienteService.deleteCliente(cliente.id).subscribe(response => {
             this.clientes = this.clientes.filter(cli => cli !== cliente);
 
-            swalWithBootstrapButtons.fire(
-              'Deleted!',
-              'Your file has been deleted.',
-              'success'
-            );
+            swalWithBootstrapButtons.fire('Deleted!', 'Your file has been deleted.', 'success');
           });
         }
       });

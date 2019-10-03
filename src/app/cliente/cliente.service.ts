@@ -2,10 +2,12 @@ import { Injectable } from '@angular/core';
 import { Cliente } from './cliente';
 import { Observable, throwError } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
-import { HttpClient, HttpRequest, HttpEvent } from '@angular/common/http';
+import { HttpClient, HttpRequest, HttpEvent, HttpHeaders } from '@angular/common/http';
 import { DatePipe } from '@angular/common';
 import { Router } from '@angular/router';
 import swal from 'sweetalert2';
+import { AuthService } from '../usuarios/auth.service';
+import { Region } from './region';
 
 @Injectable({
   providedIn: 'root',
@@ -13,69 +15,44 @@ import swal from 'sweetalert2';
 export class ClienteService {
   private urlCliente: string = 'http://localhost:8080/api/v1/clientes';
 
-  constructor(private http: HttpClient, private router: Router) {}
+  constructor(private http: HttpClient, private router: Router, private auth: AuthService) {}
 
   getClientes(page: number): Observable<any> {
-    return this.http.get(this.urlCliente + '/page/' + page).pipe(
-      map((response: any) => {
-        let clientes = response.content as Cliente[];
-        clientes.map(cliente => {
-          cliente.nombre = cliente.nombre.toUpperCase();
-          let datePipe: DatePipe = new DatePipe('es');
-          //cliente.createdAt = datePipe.transform(cliente.createdAt, 'EEEE dd, MMMM yyyy');
-          return cliente;
-        });
-        console.log(response);
-        return response;
-      })
-    );
+    return this.http.get(this.urlCliente + '/page/' + page);
   }
 
   getClienteById(id: number): Observable<Cliente> {
-    return this.http.get<Cliente>(`${this.urlCliente}/${id}`).pipe(
-      catchError(error => {
-        this.router.navigate(['/clientes']);
-        swal.fire('Error!', `${error.error.message}`, 'error');
-        return throwError(error);
-      })
-    );
+    return this.http.get<Cliente>(`${this.urlCliente}/${id}`);
   }
 
   createCliente(cliente: Cliente): Observable<Cliente> {
     return this.http.post<Cliente>(this.urlCliente, cliente).pipe(
       catchError(error => {
-        if (error.status == 400) {
+        if (error.status == 400 && error.error.message) {
           return throwError(error);
         }
-        console.log(error);
-        swal.fire('Error!', `${error.error.message}`, 'error');
+
+        swal.fire('Error!', `Error desconocido`, 'error');
         return throwError(error);
       })
     );
   }
 
   updateCliente(cliente: Cliente): Observable<Cliente> {
-    return this.http
-      .put<Cliente>(`${this.urlCliente}/${cliente.id}`, cliente)
-      .pipe(
-        catchError(error => {
-          if (error.status === 400) {
-            return throwError(error);
-          }
-          console.log(error);
-          swal.fire('Error!', `${error.error.message}`, 'error');
-          return throwError(error);
-        })
-      );
-  }
-
-  deleteCliente(id: number) {
-    return this.http.delete(`${this.urlCliente}/${id}`).pipe(
+    return this.http.put<Cliente>(`${this.urlCliente}/${cliente.id}`, cliente).pipe(
       catchError(error => {
-        swal.fire('Error!', `${error.error.message}`, 'error');
+        if (error.status === 400 && error.error.message) {
+          return throwError(error);
+        }
+
+        swal.fire('Error!', `Error desconocido`, 'error');
         return throwError(error);
       })
     );
+  }
+
+  deleteCliente(id: number) {
+    return this.http.delete(`${this.urlCliente}/${id}`);
   }
 
   subirFoto(file: File, clientId): Observable<HttpEvent<{}>> {
@@ -85,6 +62,29 @@ export class ClienteService {
     const req = new HttpRequest('POST', `${this.urlCliente}/upload`, formData, {
       reportProgress: true,
     });
+
     return this.http.request(req);
   }
+
+  getRegiones(): Observable<Region[]> {
+    return this.http.get<Region[]>(this.urlCliente + '/regiones');
+  }
 }
+
+/**
+   * 
+   *  .pipe(
+      map((response: any) => {
+        let clientes = response.content as Cliente[];
+        clientes.map(cliente => {
+          //cliente.nombre = cliente.nombre.toUpperCase();
+          //let datePipe: DatePipe = new DatePipe('es');
+          //cliente.createdAt = datePipe.transform(cliente.createdAt, 'EEEE dd, MMMM yyyy');
+          return cliente;
+        });
+
+
+        return response;
+      })
+    );
+   */
