@@ -1,0 +1,76 @@
+<div class="card" *ngIf="factura">
+  <div class="card-header">
+    <h1>Factura</h1>
+  </div>
+  <div class="card-body">
+    <div class="row">
+      <ul class="list-group col-sm my-3">
+        <li class="list-group-item list-group-item-primary">
+          Cliente
+        </li>
+        <li class="list-group-item">
+          <h4 class="d-inline"><span class="badge badge-secondary">Nombre: </span></h4>
+          <span> {{ factura.cliente.nombre }}</span>
+        </li>
+        <li class="list-group-item">
+          <h4 class="d-inline"><span class="badge badge-secondary">Apellido: </span></h4>
+          <span> {{ factura.cliente.apellido }}</span>
+        </li>
+        <li class="list-group-item">
+          <h4 class="d-inline"><span class="badge badge-secondary">Email: </span></h4>
+          <span> {{ factura.cliente.email }}</span>
+        </li>
+      </ul>
+      <ul class="list-group col-sm my-3">
+        <li class="list-group-item list-group-item-primary">
+          Detalles
+        </li>
+        <li class="list-group-item">
+          <h4 class="d-inline"><span class="badge badge-secondary">N° Factura: </span></h4>
+          <span> {{ factura.id }}</span>
+        </li>
+        <li class="list-group-item">
+          <h4 class="d-inline"><span class="badge badge-secondary">Descripcion: </span></h4>
+          <span> {{ factura.descripcion }}</span>
+        </li>
+        <li class="list-group-item">
+          <h4 class="d-inline"><span class="badge badge-secondary">Fecha: </span></h4>
+          <span> {{ factura.createdAt }}</span>
+        </li>
+      </ul>
+    </div>
+    <div class="row">
+      <ul class="list-group col-sm my-3" *ngIf="factura.observacion">
+        <li class="list-group-item list-group-item-primary">
+          Observaciones
+        </li>
+        <li class="list-group-item">{{ factura.observacion }}</li>
+      </ul>
+      <div class="alert alert-info" *ngIf="!factura.observacion">
+        No hay observacion.
+      </div>
+    </div>
+
+    <table class="table table-bordered my-3">
+      <thead>
+        <tr class="table-primary">
+          <th>Producto</th>
+          <th>Cantidad</th>
+          <th>Precio Unitario</th>
+          <th>Importe</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let item of factura.items">
+          <td>{{ item.producto.nombre }}</td>
+          <td>{{ item.cantidad }}</td>
+          <td>${{ item.producto.precio }}</td>
+          <td>${{ item.importe }}</td>
+        </tr>
+      </tbody>
+    </table>
+    <h4 class="float-right">
+      Total: <span class="badge badge-secondary">${{ factura.total }}</span>
+    </h4>
+  </div>
+</div>

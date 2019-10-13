@@ -3,7 +3,7 @@ import { NgModule, LOCALE_ID } from '@angular/core';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { registerLocaleData } from '@angular/common';
 import localeEs from '@angular/common/locales/es-CL';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -24,12 +24,15 @@ import {
   MatToolbarModule,
   MatTableModule,
   MatMenuModule,
+  MatAutocompleteModule,
 } from '@angular/material';
 import { MatMomentDateModule } from '@angular/material-moment-adapter';
 import { ClienteDetallesComponent } from './cliente/cliente-detalles/cliente-detalles.component';
 import { LoginComponent } from './usuarios/login.component';
 import { AuthInterceptor } from './usuarios/interceptors/auth';
 import { TokenInterceptor } from './usuarios/interceptors/token';
+import { DetalleFacturaComponent } from './facturas/detalle-factura/detalle-factura.component';
+import { FacturaFormComponent } from './facturas/factura-form/factura-form.component';
 
 registerLocaleData(localeEs, 'es');
 
@@ -43,6 +46,8 @@ registerLocaleData(localeEs, 'es');
     PaginadorComponent,
     ClienteDetallesComponent,
     LoginComponent,
+    DetalleFacturaComponent,
+    FacturaFormComponent,
   ],
   imports: [
     BrowserModule,
@@ -59,6 +64,8 @@ registerLocaleData(localeEs, 'es');
     MatToolbarModule,
     MatTableModule,
     MatMenuModule,
+    ReactiveFormsModule,
+    MatAutocompleteModule,
   ],
   providers: [
     ClienteService,

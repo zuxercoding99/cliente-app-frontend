@@ -1,0 +1,121 @@
+<div class="container">
+  <div class="card my-3">
+    <div class="card-header text-center"><h3>Crear Factura</h3></div>
+    <div class="card-body">
+      <form #facturaForm="ngForm">
+        <div class="form-group row" *ngIf="factura.cliente">
+          <label class="col-sm-3" for="cliente">Cliente</label>
+          <div class="col-sm-6">
+            <input
+              type="text"
+              class="form-control"
+              id="cliente"
+              value="{{ factura.cliente.nombre }} {{ factura.cliente.apellido }}"
+              disabled
+            />
+          </div>
+        </div>
+        <div class="form-group row">
+          <label class="col-sm-3" for="descripcion">Descripcion</label>
+          <div class="col-sm-6">
+            <input
+              type="text"
+              class="form-control"
+              id="descripcion"
+              [(ngModel)]="factura.descripcion"
+              name="descripcion"
+              #descripcion="ngModel"
+              required
+            />
+            <div
+              class="alert alert-danger"
+              *ngIf="descripcion.invalid && (descripcion.touched || facturaForm.submitted)"
+            >
+              Descripcion es requerida.
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group row">
+          <label class="col-sm-3" for="observacion">Observacion</label>
+          <div class="col-sm-6">
+            <textarea
+              class="form-control"
+              id="observacion"
+              [(ngModel)]="factura.observacion"
+              name="observacion"
+            ></textarea>
+          </div>
+        </div>
+
+        <mat-form-field>
+          <input
+            type="text"
+            placeholder="Elegir Producto"
+            aria-label="Number"
+            matInput
+            [formControl]="autocompleteControl"
+            [matAutocomplete]="auto"
+          />
+          <mat-autocomplete
+            #auto="matAutocomplete"
+            [displayWith]="mostrarNombre"
+            (optionSelected)="seleccionarProducto($event)"
+          >
+            <mat-option *ngFor="let producto of productosFiltrados | async" [value]="producto">
+              {{ producto.nombre }}
+            </mat-option>
+          </mat-autocomplete>
+        </mat-form-field>
+        <div class="alert alert-danger" *ngIf="autocompleteControl.invalid && facturaForm.submitted">
+          Debe seleccionar al menos un producto.
+        </div>
+        <table class="table" *ngIf="factura.items.length > 0">
+          <thead>
+            <tr>
+              <th>Producto</th>
+              <th>Precio</th>
+              <th>Cantidad</th>
+              <th>Importe</th>
+              <th>Eliminar</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of factura.items">
+              <td>{{ item.producto.nombre }}</td>
+              <td>${{ item.producto.precio }}</td>
+              <td>
+                <input
+                  type="number"
+                  style="min-width: 50px;"
+                  class="form-control col-sm-4"
+                  value="{{ item.cantidad }}"
+                  (change)="actualizarCantidad(item.producto.id, $event)"
+                />
+              </td>
+              <td>${{ item.calcularImporte() }}</td>
+              <td>
+                <button class="btn btn-danger btn-block" (click)="eliminarItem(item.producto.id)">
+                  Eliminar
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h5 class="float-right" *ngIf="factura.items.length > 0">
+          Total: <span class="badge badge-secondary">{{ factura.calcularTotal() }}</span>
+        </h5>
+        <div class="text-center">
+          <button
+            type="submit"
+            class="btn btn-primary btn-block"
+            (click)="crearFactura(facturaForm)"
+          >
+            Crear
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

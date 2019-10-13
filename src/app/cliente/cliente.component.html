@@ -9,7 +9,7 @@
   </div>
   <div class="card-body table-responsive">
     <div class="mb-2" *ngIf="auth.hasRole('ROLE_ADMIN')">
-      <button class="btn btn-primary" routerLink="/clientes/create">
+      <button class="btn btn-dark py-3" routerLink="/clientes/create">
         Crear Cliente
       </button>
     </div>
@@ -34,6 +34,7 @@
           <th scope="col">Fecha de Creación</th>
           <th *ngIf="auth.hasRole('ROLE_ADMIN')">Editar</th>
           <th *ngIf="auth.hasRole('ROLE_ADMIN')">Eliminar</th>
+          <th *ngIf="auth.hasRole('ROLE_ADMIN')">Crear Factura</th>
         </tr>
       </thead>
       <tbody>
@@ -60,19 +61,26 @@
           <td>{{ cliente.email }}</td>
           <td>{{ cliente.createdAt | date: 'EEEE dd, MMMM yyyy' }}</td>
           <td *ngIf="auth.hasRole('ROLE_ADMIN')">
-            <button class="btn btn-warning" [routerLink]="['/clientes/edit', cliente.id]">
+            <button class="btn btn-warning btn-block" [routerLink]="['/clientes/edit', cliente.id]">
               Editar
             </button>
           </td>
           <td *ngIf="auth.hasRole('ROLE_ADMIN')">
-            <button class="btn btn-danger" (click)="deleteCliente(cliente)">
+            <button class="btn btn-danger btn-block" (click)="deleteCliente(cliente)">
               Eliminar
+            </button>
+          </td>
+          <td *ngIf="auth.hasRole('ROLE_ADMIN')">
+            <button
+              class="btn btn-dark btn-block"
+              [routerLink]="['/cliente', cliente.id, 'create-factura']"
+            >
+              Crear Factura
             </button>
           </td>
         </tr>
       </tbody>
     </table>
-
-    <app-paginador *ngIf="paginador" [paginador]="paginador"></app-paginador>
+    <app-paginador class="my-3" *ngIf="paginador" [paginador]="paginador"></app-paginador>
   </div>
 </div>
